@@ -21,6 +21,19 @@
 		<artifactId>junit</artifactId>
 		<version>4.11</version>
 	</dependency>
+	
+		<dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>2.1.0</version>
+    </dependency>
+	
+	
+	
+	
 	</dependencies>
+	
+
+	
 
 </project>
