@@ -1,9 +1,6 @@
 package com.fwq.jdies.lock;
 
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
-
-import javax.print.attribute.standard.MediaSize.ISO;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -32,7 +29,7 @@ public class JedisLock {
 		public JedisLock(JedisPool jedisPool){
 			if(JedisPool==null)
 				JedisPool=jedisPool;
-				jedis=jedisPool.getResource();
+			jedis=jedisPool.getResource();
 		}
 		
 		
@@ -62,7 +59,7 @@ public class JedisLock {
 		 * while循环来获取锁，每次循环都将过期时间expireTime与当前时间做比较，如果expireTime小于了当前时间，则表示最终时间到了，返回false
 		 * 否则，循环获取该锁。
 		 */
-	public synchronized boolean getLock(String key, int timeOut,int expireTime) {
+	public boolean getLock(String key, int timeOut,int expireTime) {
 		
 		long nanoTime = System.nanoTime()+TimeUnit.SECONDS.toNanos(timeOut);
 		
