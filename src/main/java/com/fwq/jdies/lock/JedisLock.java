@@ -1,6 +1,7 @@
 package com.fwq.jdies.lock;
 
 import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 import javax.print.attribute.standard.MediaSize.ISO;
 
@@ -15,70 +16,107 @@ import redis.clients.jedis.JedisPool;
  */
 public class JedisLock {
 	 
-	   private static  String DEFAULT_VALUE="TRUE";
 
-		private static  int DEFALULT_TIME_OUT=3;//秒
+		private static  int DEFALULT_TIME_OUT=3;//秒，获取锁的默认超时时间
 		
-		private static  int DEFALUT_EXPIRE=180;//秒
+		private static  int DEFALUT_EXPIRE=180;//秒，key的过期时间
 		
-		private JedisPool JedisPool;
+		private static JedisPool JedisPool;
 		
 		private Jedis jedis;
+		
 
-		private boolean isLock=true;
+		private boolean isLock;
 
 		
 		public JedisLock(JedisPool jedisPool){
-			this.JedisPool=jedisPool;
-			this.jedis=jedisPool.getResource();
+			if(JedisPool==null)
+				JedisPool=jedisPool;
+				jedis=jedisPool.getResource();
 		}
 		
+		
+		/**
+		 * @param key
+		 * @return 
+		 */
 		public boolean getLock(String key){
 			return getLock(key, DEFALULT_TIME_OUT);
 		}
+		
 		/**
 		 * @param key
 		 * @param timeOut
-		 * @return
-		 * 获取锁时，先setnx，根据返回值判断是否已经存在该key，
-		 * 如果返回0表示已存在，循环等待获取，等待时间3秒（默认），直到超时
-		 *如果返回1表示该key不存在redis中，返回true，表示已获取锁。
+		 * @return 
 		 */
-	public boolean getLock(String key, int timeOut) {
-		long nanoTime = System.nanoTime();
-		long nanoTimeOut = timeOut * 1000 * 1000;
-
-		while ((System.nanoTime() - nanoTime) < nanoTimeOut) {
-
-			if (jedis.setnx(key, DEFAULT_VALUE) == 1) {
-				jedis.expire(key, DEFALUT_EXPIRE);
-				isLock = true;
-			} else {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					isLock = false;
-				}
+		public boolean getLock (String key,int timeOut)
+		{
+			return getLock(key, timeOut, DEFALUT_EXPIRE);
+		}
+		/**
+		 * 循环等待获取
+		 * @param key
+		 * @param timeOut
+		 * @return
+		 * 当前时间+超时时间=expireTime作为获取锁的最终时间也就是到了该最终时间还没有获取到锁，则返回false，
+		 * while循环来获取锁，每次循环都将过期时间expireTime与当前时间做比较，如果expireTime小于了当前时间，则表示最终时间到了，返回false
+		 * 否则，循环获取该锁。
+		 */
+	public synchronized boolean getLock(String key, int timeOut,int expireTime) {
+		
+		long nanoTime = System.nanoTime()+TimeUnit.SECONDS.toNanos(timeOut);
+		
+		while(nanoTime>System.nanoTime())
+		{
+			Long flag = jedis.setnx(key,String.valueOf(expireTime));
+			if(flag==1)
+			{
+				jedis.expire(key, expireTime);
+				isLock=true;
+				return true;
+			}else{
 				isLock=false;
+				try {
+					TimeUnit.MILLISECONDS.sleep(100);
+				} catch (InterruptedException e) {
+					return false;
+				}
 			}
 		}
 		return isLock;
 	}
 		
-		
+	public boolean getLockNowait(String key)
+	{
+		return getLockNowait(key, DEFALUT_EXPIRE);
+	}
 	
-		/**
-		 * @param key 
-		 * @param closeJedis 是否还使用该JedisLock对象
-		 *  如果本对象已经获取到锁，删除该key
-		 */
-		public void unLock(String key,boolean closeJedis){
-			if(isLock){
-				jedis.del(key);
-				isLock=false;
-			}
-			if(closeJedis)
-				JedisPool.returnResource(jedis);
+	/**
+	 * @param key
+	 * @param timeOut
+	 * @param dEFALUT_EXPIRE2
+	 * @return 
+	 * 不等待获取锁
+	 */
+	public boolean getLockNowait(String key,int expireTime) 
+	{
+		Long setnx = jedis.setnx(key, "");
+		jedis.expire(key, expireTime);
+		return setnx==1?true:false;
+	}
+
+
+	/**
+	 * @param key
+	 *            删除该key
+	 */
+	public void unLock(String key)
+	{
+		if (isLock)
+		{
+			jedis.del(key);
+			isLock = false;
 		}
+	}
 	
 }
