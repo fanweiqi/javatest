@@ -21,7 +21,6 @@ public class JedisLock {
 		private static JedisPool JedisPool;
 		
 		private Jedis jedis;
-		
 
 		private boolean isLock;
 
@@ -83,10 +82,7 @@ public class JedisLock {
 		return isLock;
 	}
 		
-	public boolean getLockNowait(String key)
-	{
-		return getLockNowait(key, DEFALUT_EXPIRE);
-	}
+	
 	
 	/**
 	 * @param key
@@ -95,6 +91,10 @@ public class JedisLock {
 	 * @return 
 	 * 不等待获取锁
 	 */
+	public boolean getLockNowait(String key)
+	{
+		return getLockNowait(key, DEFALUT_EXPIRE);
+	}
 	public boolean getLockNowait(String key,int expireTime) 
 	{
 		Long setnx = jedis.setnx(key, "");

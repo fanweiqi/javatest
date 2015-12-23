@@ -20,7 +20,7 @@ public class HashTest {
 	{
 		StringBuilder sb = new StringBuilder();
 		MessageDigest md = MessageDigest.getInstance("md5");
-		md.update(" ".getBytes());
+		md.update("hello".getBytes());
 		//digetst方法返回md5加密过的长度为16的字节数组。
 		byte[] result = md.digest();
 		for (int i = 0; i < result.length; i++) {
