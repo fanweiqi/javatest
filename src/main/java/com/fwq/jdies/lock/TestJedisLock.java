@@ -16,7 +16,6 @@ public class TestJedisLock {
 	
 	public static void main(String[] args) {
 		
-		System.out.println(System.currentTimeMillis());
 		for (int i = 0; i < 10; i++) {
 			startT();
 		}
@@ -45,7 +44,7 @@ public class TestJedisLock {
 		if(flag)
 		{
 			System.err.println(Thread.currentThread().getName()+"：获取成功");
-			lock1.unLock(key);
+			lock1.unLock();
 		}else
 		{
 			System.out.println(Thread.currentThread().getName()+"：获取失败");

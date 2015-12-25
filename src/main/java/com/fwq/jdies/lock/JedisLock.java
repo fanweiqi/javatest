@@ -27,6 +27,8 @@ public class JedisLock {
 		private static JedisPool JedisPool;
 		
 		private boolean isLock;
+		
+		private String key;
 
 		
 		public JedisLock(JedisPool jedisPool){
@@ -35,6 +37,11 @@ public class JedisLock {
 		}
 		
 		
+		public String getKey() {
+			return key;
+		}
+
+
 		/**
 		 * @param key
 		 * @return 
@@ -63,6 +70,7 @@ public class JedisLock {
 		 */
 	public boolean getLock(String key, int timeOut,int expireTime) {
 		Jedis jedis= JedisPool.getResource();
+		this.key=key;
 		long nanoTime = System.nanoTime()+TimeUnit.SECONDS.toNanos(timeOut);
 		try {
 			while(nanoTime>System.nanoTime())
@@ -131,7 +139,7 @@ public class JedisLock {
 	 * @param key
 	 *            删除该key
 	 */
-	public void unLock(String key)
+	public void unLock()
 	{
 		Jedis jedis = JedisPool.getResource();
 		try {
