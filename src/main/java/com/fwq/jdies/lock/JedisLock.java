@@ -10,6 +10,12 @@ import redis.clients.jedis.JedisPool;
  * @date 2015-12-21 下午5:44:48
  * @Description: 
  * 用jedis来实现锁功能
+ * 
+ * 锁的使用场景通常有两种情况：
+ * ①：当发现该锁已经被占用时，不再进行操作，直接返回false，比如一个定时任务只需执行一次。
+ * ②：当发现该锁已经被占用时，进入等待队列，循环获取锁，当获取到锁时，开始执行。
+ * 
+ * 
  */
 public class JedisLock {
 	 
@@ -20,15 +26,12 @@ public class JedisLock {
 		
 		private static JedisPool JedisPool;
 		
-		private Jedis jedis;
-
 		private boolean isLock;
 
 		
 		public JedisLock(JedisPool jedisPool){
 			if(JedisPool==null)
 				JedisPool=jedisPool;
-			jedis=jedisPool.getResource();
 		}
 		
 		
@@ -59,25 +62,30 @@ public class JedisLock {
 		 * 否则，循环获取该锁。
 		 */
 	public boolean getLock(String key, int timeOut,int expireTime) {
-		
+		Jedis jedis= JedisPool.getResource();
 		long nanoTime = System.nanoTime()+TimeUnit.SECONDS.toNanos(timeOut);
-		
-		while(nanoTime>System.nanoTime())
-		{
-			Long flag = jedis.setnx(key,String.valueOf(expireTime));
-			if(flag==1)
+		try {
+			while(nanoTime>System.nanoTime())
 			{
-				jedis.expire(key, expireTime);
-				isLock=true;
-				return true;
-			}else{
-				isLock=false;
-				try {
-					TimeUnit.MILLISECONDS.sleep(100);
-				} catch (InterruptedException e) {
-					return false;
+				Long flag = jedis.setnx(key,String.valueOf(expireTime));
+				if(flag==1)
+				{
+					jedis.expire(key, expireTime);
+					isLock=true;
+					return true;
+				}else{
+					isLock=false;
+					try {
+						TimeUnit.MILLISECONDS.sleep(500);
+					} catch (InterruptedException e) {
+						return false;
+					}
 				}
 			}
+		} catch (Exception e) {
+			System.out.println("getLock时异常："+e.getMessage());
+		}finally{
+			JedisPool.returnResource(jedis);
 		}
 		return isLock;
 	}
@@ -97,8 +105,24 @@ public class JedisLock {
 	}
 	public boolean getLockNowait(String key,int expireTime) 
 	{
-		Long setnx = jedis.setnx(key, "");
-		jedis.expire(key, expireTime);
+		Jedis jedis = JedisPool.getResource();
+		Long setnx=0L;
+		try {
+			setnx = jedis.setnx(key, key);
+			if(setnx==1)
+			{
+				jedis.expire(key, expireTime);
+				isLock=true;
+				return isLock;
+			}else{
+				isLock=false;
+				return isLock;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			JedisPool.returnResource(jedis);
+		}
 		return setnx==1?true:false;
 	}
 
@@ -109,11 +133,18 @@ public class JedisLock {
 	 */
 	public void unLock(String key)
 	{
-		if (isLock)
-		{
-			jedis.del(key);
-			isLock = false;
+		Jedis jedis = JedisPool.getResource();
+		try {
+			if (isLock){
+				Long del = jedis.del(key);
+				isLock = false;
+			}
+		} catch (Exception e) {
+			System.err.println("释放锁"+key+"异常"+e);
+		}finally{
+			JedisPool.returnResource(jedis);
 		}
+		
 	}
 	
 }

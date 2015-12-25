@@ -1,33 +1,32 @@
 package com.fwq.jdies.lock;
 
 import java.io.ObjectInputStream.GetField;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 public class TestJedisLock {
-	private JedisLock lock=new JedisLock(getJedisPool());
+	private static JedisLock lock=new JedisLock(getJedisPool());
 	private int publicValue=0;
-	static String key="fdafdaf";
+	static String key="nihao";
 	
 	public static void main(String[] args) {
 		
-		JedisLock lock1 = new JedisLock(getJedisPool());
-		boolean gg = lock1.getLock(key);
-		System.out.println(gg);
-		if(gg)
-//			lock1.unLock(key);
-		
-		gg= lock1.getLock(key);
-		System.out.println(gg);
-//		
-//		for (int i = 0; i < 100; i++) {
-//			startT();
-//		}
+		System.out.println(System.currentTimeMillis());
+		for (int i = 0; i < 10; i++) {
+			startT();
+		}
 	}
 	
-	
+	@Test
+	public void testtt()
+	{
+		test();
+	}
 	
 
 	public static void startT(){
@@ -40,26 +39,27 @@ public class TestJedisLock {
 	
 	public static void test()
 	{
-		
-		JedisLock  a=new TestJedisLock().lock;
-		boolean flag = a.getLockNowait(key);
+		JedisPool jedisPool = getJedisPool();
+		JedisLock lock1 = new JedisLock(jedisPool);
+		boolean flag =lock1.getLock(key);
 		if(flag)
 		{
-			System.err.println(Thread.currentThread().getName()+"获取成功");
-			a.unLock(key);
+			System.err.println(Thread.currentThread().getName()+"：获取成功");
+			lock1.unLock(key);
 		}else
 		{
-			System.out.println(Thread.currentThread().getName()+"获取失败");
+			System.out.println(Thread.currentThread().getName()+"：获取失败");
 		}
+		
 	}
 	
 	
 	public static JedisPool getJedisPool(){
 		JedisPoolConfig config = new JedisPoolConfig();
 		config.setMaxActive(100);
-		config.setMaxIdle(10);
-		config.setMaxWait(3);
-		return new JedisPool(config,"localhost",1111);
+		config.setMaxIdle(100);
+		config.setMaxWait(30);
+		return new JedisPool("localhost",1111);
 	}
 	
 }
