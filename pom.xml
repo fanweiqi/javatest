@@ -28,9 +28,38 @@
         <version>2.1.0</version>
     </dependency>
 	
+	<dependency>  
+         <groupId>com.alibaba.rocketmq</groupId>  
+         <artifactId>rocketmq-client</artifactId>  
+         <version>3.1.7</version>  
+      </dependency>  
+      
+      <dependency>  
+         <groupId>com.alibaba.rocketmq</groupId>  
+         <artifactId>rocketmq-common</artifactId>  
+          <version>3.1.7</version> 
+      </dependency>  
+	
+	<dependency>  
+         <groupId>com.alibaba.rocketmq</groupId>  
+         <artifactId>rocketmq-remoting</artifactId>  
+          <version>3.1.7</version> 
+      </dependency>  
 	
 	
 	
+	<dependency>
+	<groupId>io.netty</groupId>
+	<artifactId>netty-all</artifactId>
+	<version>4.0.19.Final</version>
+</dependency>
+
+
+<dependency>
+	<groupId>com.alibaba</groupId>
+	<artifactId>fastjson</artifactId>
+	<version>1.1.41</version>
+</dependency>
 	</dependencies>
 	
 
