@@ -2,6 +2,7 @@ package com.fwq.rocketMQ;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -14,24 +15,24 @@ import com.alibaba.rocketmq.remoting.exception.RemotingException;
 
 public class RocketMQTest {
 	static final String NAMESER_ADDR="10.20.70.45:9876";
-	static final String PRODUCER_INSTANCE_NAME="ucfProducerTest";
-	static final String CONSUMER_INSTANCE_NAME="ucfConsumerTest";
-	static final String GROUP="testtest";
+	static final String INSTANCE_NAME="ucfGatewayPreProducer";
+	static final String GROUP="ucfGatewayPreProducerGroup";
 			
 
 	public static void main(String[] args) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
-		
+
 		final DefaultMQProducer producer = new DefaultMQProducer();
 		producer.setNamesrvAddr(NAMESER_ADDR);
-		producer.setInstanceName(PRODUCER_INSTANCE_NAME);
+		producer.setInstanceName(INSTANCE_NAME);
 		producer.setProducerGroup(GROUP);
 		producer.start();
 		Message message = new Message();
+		message.setWaitStoreMsgOK(true);
 		Date date = new Date();
 		String format = new SimpleDateFormat("yyyyMMddHHmmss").format(date)+"A";
 		message.setBody(format.getBytes());
-		message.setTopic("testucf");
-		message.setTags("testucf");
+		message.setTopic("gatewayZtrzQueryTopic");
+		message.setTags("gatewayZtrzQueryTag");
 		message.setDelayTimeLevel(1);
 		SendResult send = producer.send(message);
 		System.out.println(send);

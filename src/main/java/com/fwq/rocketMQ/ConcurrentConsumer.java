@@ -44,7 +44,7 @@ public class ConcurrentConsumer implements MessageListenerConcurrently {
 	public void startConsumer() throws MQClientException{
 		DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
         consumer.setNamesrvAddr(RocketMQTest.NAMESER_ADDR);
-        consumer.setInstanceName(RocketMQTest.PRODUCER_INSTANCE_NAME);
+        consumer.setInstanceName(RocketMQTest.INSTANCE_NAME);
         consumer.setConsumerGroup(RocketMQTest.GROUP);
         consumer.setConsumeMessageBatchMaxSize(1);
         consumer.setConsumeThreadMin(1);

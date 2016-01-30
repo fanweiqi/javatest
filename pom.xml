@@ -6,6 +6,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>javatest</name>
 	<description>keep learning ...</description>
+	<properties>
+		<springVersion>3.2.3.RELEASE</springVersion>
+	</properties>
 
 
 	<dependencies>
@@ -60,7 +63,43 @@
 	<artifactId>fastjson</artifactId>
 	<version>1.1.41</version>
 </dependency>
+
+	<description>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${springVersion}</version>
+		</description>
+		
+			<description>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${springVersion}</version>
+		</description>
+		
+			<description>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${springVersion}</version>
+		</description>
+		
+		
+	<description>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-contextSupport</artifactId>
+			<version>${springVersion}</version>
+		</description>
+		
+			<description>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-Test</artifactId>
+			<version>${springVersion}</version>
+			<scope>test</scope>
+		</description>
+		
+		
 	</dependencies>
+	
+	
 	
 
 	
