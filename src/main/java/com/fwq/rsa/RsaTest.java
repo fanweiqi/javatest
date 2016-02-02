@@ -18,7 +18,12 @@ import org.apache.commons.net.util.Base64;
 /**
  * @date 2016年2月2日 下午10:48:23
  * @author FWQ
- *
+ * 
+ * 通常使用base64来转码是因为，
+ * 我们知道在计算机中任何数据都是按ascii码存储的，而ascii码的128～255之间的值是不可见字符。
+ * 而在网络上交换数据时，比如说从A地传到B地，往往要经过多个路由设备，
+ * 由于不同的设备对字符的处理方式有一些不同，这样那些不可见字符就有可能被处理错误，
+ * 这是不利于传输的。所以就先把数据先做一个Base64编码，统统变成可见字符，这样出错的可能性就大降低了。
  */
 public class RsaTest {
 	private static String publicKeyFile="d:/desktop/publicKey";
