@@ -88,9 +88,13 @@ public class Utils {
 					} else {
 						throw new IllegalArgumentException("requestMethond 参数异常");
 					}
-				  connection.setRequestProperty("accept", "*/*");
+				  connection.setRequestProperty("accept", "*text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8*");
+		          connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
+		          connection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.8");
+		          connection.setRequestProperty("Cache-Control", "max-age=0");
 		          connection.setRequestProperty("connection", "Keep-Alive");
-		          connection.setRequestProperty("user-agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+		          connection.setRequestProperty("user-agent","ozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36 SE 2.X MetaSr 1.0");
+		          connection.setUseCaches(true);
 		          InputStream  inputStream= connection.getInputStream();
 		          ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		          int b=0;
